@@ -3,7 +3,7 @@ const Vue = require("vue");
 const fs = require("fs");
 
 const { createBundleRenderer } = require("vue-server-renderer");
-const setupDevServer = require('./build/setup-dev-server')
+const setupDevServer = require("./build/setup-dev-server");
 const server = express();
 
 //express.static处理的是物理磁盘文件
@@ -31,28 +31,24 @@ if (isProd) {
     });
   });
 }
-const render = (req, res) => {
-  renderer.renderToString(
-    {
+const render = async (req, res) => {
+  try {
+    const html = await renderer.renderToString({
       title: "标题",
       meta: `<meta name="description" content="liangs">`,
-    },
-    (err, html) => {
-      console.log(err);
-      if (err) {
-        res.status(500).end("error");
-        return;
-      }
-      res.setHeader("Content-Type", "text/html; charset=utf-8");
-      // res.end(html);
-      res.end(html);
-    }
-  );
+      url: req.url,
+    });
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    res.end(html);
+  } catch (error) {
+    res.status(500).end("error");
+  }
 };
 //代码从上至下执行，生产环境通过自己打包文件已经生成了Renderer渲染器，直接获取
 //开发环境时，需要等待打包构建->生成renderer渲染器
+//服务端路由设置为*,意味着所有的路由都会进入到这里
 server.get(
-  "/",
+  "*",
   isProd
     ? render
     : async (req, res) => {

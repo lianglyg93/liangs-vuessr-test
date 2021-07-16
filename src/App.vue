@@ -1,8 +1,9 @@
 <template>
   <div id="app">
-    <h3>{{ message }} - {{inputVal}}</h3>
-    <input type="text" v-model="inputVal" />
-    <button @click="handClick">按钮</button>
+    <router-link to="/">首页</router-link>
+    <router-link to="/about">about页面</router-link>
+
+    <router-view/>
   </div>
 </template>
 
